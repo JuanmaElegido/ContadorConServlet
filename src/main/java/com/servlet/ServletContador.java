@@ -20,19 +20,21 @@ public class ServletContador extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest peticion, HttpServletResponse respuesta) throws ServletException, IOException {
-		String valorPeticion = peticion.getParameter("numeroPeticion");
+		Object valorPeticion = peticion.getSession().getAttribute("numeroPeticion");
 		
 		Long numeroPeticion;
 		
-		if (valorPeticion == "") {
-			numeroPeticion = 0L;
+		if (valorPeticion == null) {
+			numeroPeticion = 1L;
+			valorPeticion = numeroPeticion.toString();
+			peticion.getSession().setAttribute("numeroPeticion", valorPeticion);
 		} else {
-			numeroPeticion = Long.parseLong(valorPeticion);
+			numeroPeticion = Long.parseUnsignedLong((String) valorPeticion);
+			numeroPeticion = numeroPeticion+1;
+			valorPeticion = numeroPeticion.toString();
+			peticion.getSession().setAttribute("numeroPeticion", valorPeticion);
 		}
-		numeroPeticion = numeroPeticion+1;
-		valorPeticion = numeroPeticion.toString();
 		
-		peticion.setAttribute("numeroPeticion", valorPeticion);
 		RequestDispatcher rqd = peticion.getRequestDispatcher("/jsp/contadorPeticiones.jsp");
 		rqd.include(peticion, respuesta);
 	}
